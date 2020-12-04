@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"> 
+  <title>Type it!</title>
+</head>
+<style type="text/css">
+	body{
+		font-family: 'Montserrat', sans-serif;
+	}
+	.timeanddate
+	{
+		display: grid;
+		grid-template-columns: repeat(2,1fr);
+	}
+
+    header
+    {
+      background-color: #0b1a2b;
+      color: white;
+      padding: 50px;
+    }
+    #word-input
+    {
+      height: 200px;
+      width: 500px;
+      margin-left: 12px;
+      padding: 2px;
+      border: 15px solid #858585;
+      border-radius: 5px;
+    }
+		textarea
+		{
+      margin-right: 10px;
+			height: 200px;
+			width: 500px;
+			margin-top: 20px;
+			padding: 2px;
+			border: 15px solid #858585;
+			border-radius: 5px;
+			color: black !important;
+			font-size: 25px;
+		}
+		#current-word
+		{
+			padding: 20px;
+			margin-top: 20px;
+			width: 500px; /*change*/
+			background-color: #ececec;
+			border: none!important;
+		}
+		#timediv	
+		{
+			margin-top: -30px;	
+			margin-left: 250px;
+		}
+
+		#scorediv
+		{
+			margin-top: -30px;
+			margin-right: 192px;
+		}
+		input[type=button]{
+		  background-color: #1c9ed1;
+		  border: none;
+		  color: white;
+		  padding: 10px 22px;
+		  text-decoration: none;
+		  margin: 4px 2px;
+		  cursor: pointer;
+		}
+		input[type=button]:hover
+		{
+			opacity: 0.7;
+			color: black;
+		}
+	 /* Extra small devices (phones, 600px and down) */
+	@media only screen and (max-width: 600px) {
+		#current-word
+		{
+			padding: 20px;
+			margin-top: 20px;
+			width: 300px; /*change*/
+			background-color: #eee;
+			border: none!important;
+		}
+	    #word-input
+	    {
+	      height: 200px;
+	      width: 290px;
+	      margin-left: 10px;
+	      padding: 2px;
+	      border: 15px solid #858585;
+	      border-radius: 5px;
+	    }
+	    #timediv	
+		{
+			/*margin-top: -30px;	*/
+			margin-left: 12%;
+			width: 120px;
+
+		}
+		#scorediv
+		{
+			/*margin-top: -30px;*/
+			/*margin-right: 192px;*/
+			margin-right: 0%;
+		}
+	}
+</style>
+
+<body class="">
+  <center>
+  <header>
+    <center><h1>TEST YOUR TYPING SPEED</h1></center>
+  </header>
+  <div >
+        <div id="current-word"><span style="font-size: 25px;font-weight: bold;">Welcome to type master</span>
+        </div>
+        <textarea type="text" class="" placeholder="Start typing..." id="word-input" autofocus></textarea>
+        <h4 style="margin-top: 15px" id="message"></h4>
+
+        <div class="timeanddate">
+          <div id="timediv">
+            <h3>Time Left:
+              <span id="time">0</span>
+            </h3>
+          </div>
+          <div id="scorediv">
+            <h3>Score:
+              <span id="score">0</span>
+            </h3>
+          </div>
+          <br><br>
+        </div>
+  </div>
+  <center>
+    <input type="button" id="btn" value="Play">
+    <input type="button" id="btnReset" value="Reset">
+  </center>
+</center>
+  <script type="text/javascript">
+    document.getElementById("btn").addEventListener('click', init);
+    document.getElementById("btnReset").addEventListener('click', resetfun);
+    function resetfun()
+    {
+      window.location.reload();           
+    }
+const currentLevel = 60;
+var sum=0;
+let time = currentLevel;
+let score = 0;
+let isPlaying;
+var totalwords = '';
+var w=0;
+var ch=0;
+
+const wordInput = document.querySelector('#word-input');
+const currentWord = document.querySelector('#current-word');
+const scoreDisplay = document.querySelector('#score');
+const timeDisplay = document.querySelector('#time');
+const message = document.querySelector('#message');
+
+//const seconds = document.querySelector('#seconds');
+
+const words = ['account','accurate','acres','across','act','action','active','activity',
+  'actual','actually','add','addition','additional','adjective','adult','adventure',
+  'advice','affect','afraid','after','afternoon','again','against','age',
+  'ago','agree','ahead','aid','air','airplane','alike','alive',
+  'all','allow','almost','alone','along','aloud','alphabet','already',
+  'also','although','am','among','amount','ancient','angle','angry',
+  'animal','announced','another','answer','ants','any','anybody','anyone',
+  'anything','anyway','anywhere','apart','apartment','appearance','apple','applied',
+  'appropriate','are','area','arm','army','around','arrange','arrangement',
+  'arrive','arrow','art','article','as','aside','ask','asleep',
+  'at','ate','atmosphere','atom','atomic','attached','attack','attempt',
+  'attention','audience','author','automobile','available','average','avoid','aware',
+  'away','baby','back','bad','badly','bag','balance','ball',
+  'balloon','band','bank','bar','bare','bark','barn','base',
+  'baseball','basic','basis','basket','bat','battle','be','bean',
+  'bear','beat','beautiful','beauty','became','because','become','becoming',
+  'bee','been','before','began','beginning','begun','behavior','behind',
+  'being','believed','bell','belong','below','belt','bend','beneath',
+  'bent','beside','best','bet','better','between','beyond','bicycle',
+  'bigger','biggest','bill','birds','birth','birthday','bit','bite',
+  'black','blank','blanket','blew','blind','block','blood','blow',
+  'blue','board','boat','body','bone','book','border','born',
+  'both','bottle','bottom','bound','bow','bowl','box','boy',
+  'brain','branch','brass','brave','bread','break','breakfast','breath',
+  'breathe','breathing','breeze','brick','bridge','brief','bright','bring',
+  'broad','broke','broken','brother','brought','brown','brush','buffalo',
+  'build','building','built','buried','burn','burst','bus','bush',
+  'business','busy','but','butter','buy','by','cabin','cage',
+  'cake','call','calm','came','camera','camp','can','canal',
+  'cannot','cap','capital','captain','captured','car','carbon','card',
+  'care','careful','carefully','carried','carry','case','cast','castle',
+  'cat','catch','cattle','caught','cause','cave','cell','cent',
+  'center','central','century','certain','certainly','chain','chair','chamber',
+  'chance','change','changing','chapter','character','characteristic','charge','chart',
+  'check','cheese','chemical','chest','chicken','chief','child','children',
+  'choice','choose','chose','chosen','church','circle','circus','citizen',
+  'city','class','classroom','claws','clay','clean','clear','clearly',
+  'climate','climb','clock','close', 'closet', 'closely','closer','cloth','clothes',
+  'clothing','cloud','club','coach','coal','coast','coat','codepen','coffee',
+  'cold','collect','college','colony','color','column','combination','combine',
+  'come','comfortable','coming','command','common','community','company','compare',
+  'compass','complete','completely','complex','composed','composition','compound','concerned',
+  'condition','congress','connected','consider','consist','consonant','constantly','construction',
+  'contain','continent','continued','contrast','control','conversation','cook','cookies',
+  'cool','copper','copy','corn','corner','correct','correctly','cost',
+  'cotton','could','count','country','couple','courage','course','court',
+  'cover','cow','cowboy','crack','cream','create','creature','crew',
+  'crop','cross','crowd','cry','cup','curious','current','curve',
+  'customs','cut','cutting','daily','damage','dance','danger','dangerous',
+  'dark','darkness','date','daughter','dawn','day','dead','deal',
+  'dear','death','decide','declared','deep','deeply','deer','definition',
+  'degree','depend','depth','describe','desert','design','desk','detail',
+  'determine','develop','development','diagram','diameter','did','die','differ',
+  'difference','different','difficult','difficulty','dig','dinner','direct','direction',
+  'directly','dirt','dirty','disappear','discover','discovery','discuss','discussion',
+  'disease','dish','distance','distant','divide','division','do','doctor',
+  'does','dog','doing','doll','dollar','done','donkey','door',
+  'dot','double','doubt','down','dozen','draw','drawn','dream',
+  'dress','drew','dried','drink','drive','driven','driver','driving',
+  'drop','dropped','drove','dry','duck','due','dug','dull',
+  'during','dust','duty','each','eager','ear','earlier','early',
+  'earn','earth','easier','easily','east','easy','eat','eaten',
+  'edge','education','effect','effort','egg','eight','either','electric',
+  'electricity','element','elephant','eleven','else','empty','end','enemy',
+  'energy','engine','engineer','enjoy','enough','enter','entire','entirely',
+  'environment','equal','equally','equator','equipment','escape','especially','essential',
+  'establish','even','evening','event','eventually','ever','every','everybody',
+  'everyone','everything','everywhere','evidence','exact','exactly','examine','example',
+  'excellent','except','exchange','excited','excitement','exciting','exclaimed','exercise',
+  'exist','expect','experience','experiment','explain','explanation','explore','express',
+  'expression','extra','eye','face','facing','fact','factor','factory',
+  'failed','fair','fairly','fall','fallen','familiar','family','famous',
+  'far','farm','farmer','farther','fast','fastened','faster','fat',
+  'father','favorite','fear','feathers','feature','fed','feed','feel',
+  'feet','fell','fellow','felt','fence','few','fewer','field',
+  'fierce','fifteen','fifth','fifty','fight','fighting','figure','fill',
+  'film','final','finally','find','fine','finest','finger','finish',
+  'fire','fireplace','firm','first','fish','five','fix','flag',
+  'flame','flat','flew','flies','flight','floating','floor','flow',
+  'flower','fly','fog','folks'
+];
+
+function init() {
+  showWord(words);
+  wordInput.addEventListener('input', startMatch);
+  setInterval(countdown, 1000);
+  setInterval(checkStatus, 50);
+}
+function startMatch() {
+  if (matchWords()) {
+    isPlaying = true;
+    
+    showWord(words);
+    wordInput.value = '';
+    score++;
+  }
+  if (score === -1) {
+    scoreDisplay.innerHTML = 0;
+  } else {
+    scoreDisplay.innerHTML = score;
+  }
+}
+function matchWords() {
+  if (wordInput.value === currentWord.innerHTML) {
+    message.innerHTML = 'Correct!!!';
+    return true;
+  } else {
+    message.innerHTML = '';
+    return false;
+  }
+}
+function showWord(words) {
+  const randIndex = Math.floor(Math.random() * words.length);
+  currentWord.innerHTML = words[randIndex];
+}
+function countdown() {
+  if (time > 0) {
+    time--;
+  } else if (time === 0) {
+    isPlaying = false;
+  }
+  timeDisplay.innerHTML = time;
+}
+function checkStatus() {
+  if (!isPlaying && time === 0) {
+    message.innerHTML = 'Game Over!!!';
+    score = -1;
+    showWord(" ");
+  }
+}
+  </script>
+</body>
+</html>
